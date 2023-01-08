@@ -34,7 +34,7 @@ jobs:
         privateKey: ${{ secrets.SSH_PRIVATE_KEY }}
         command: |
           cd /var/www/html/codeploy
-          echo "${{ secrets.ENV_FILE }}" > .env
+          echo "${{ secrets.BESANA_ENV }}" > .env
           sudo composer install --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
           sudo chown -R ubuntu:ubuntu .env vendor
           sudo php artisan key:generate
