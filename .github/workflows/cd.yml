@@ -33,8 +33,8 @@ jobs:
         hosts: '${{ secrets.REMOTE_USER }}@${{ secrets.HOSTNAME }}'
         privateKey: ${{ secrets.SSH_PRIVATE_KEY }}
         command: |
+          sudo cp /var/www/html/.env /var/www/html/codeploy/.env
           cd /var/www/html/codeploy
-          echo "${{ secrets.BESANA_ENV }}" > .env
           sudo composer install --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
           sudo chown -R ubuntu:ubuntu .env vendor
           sudo php artisan key:generate
