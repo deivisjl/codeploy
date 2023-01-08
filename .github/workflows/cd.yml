@@ -39,6 +39,7 @@ jobs:
           sudo php artisan key:generate
           sudo chmod -R 777 storage bootstrap/cache
           sudo php artisan config:cache
+          sudo chown -R ubuntu:ubuntu vendor
       env:
         DB_CONNECTION: ${{ secrets.BESANA_CONNECTION }}
         DB_DATABASE: ${{ secrets.BESANA_DATABASE }}
