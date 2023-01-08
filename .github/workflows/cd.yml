@@ -1,0 +1,44 @@
+name: Besana CD
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    name: Deploy Besana
+    defaults:
+      run:
+        shell: bash
+    runs-on: ubuntu-20.04
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: 'Deploy to production'
+      uses: burnett01/rsync-deployments@23a557dceb19f9bb960ef40cf75cab5e9b37ec1f
+      with:
+        switches: -avzr --delete
+        path: ./
+        remote_path: /var/www/html/codeploy
+        remote_host: ${{ secrets.HOSTNAME }}
+        remote_user: ${{ secrets.REMOTE_USER }}
+        remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+    - name: Sync vendor packages
+      uses: JimCronqvist/action-ssh@7737f1192ddd8376686e9d6354dea44592c942bf
+      with:
+        hosts: '${{ secrets.REMOTE_USER }}@${{ secrets.HOSTNAME }}'
+        privateKey: ${{ secrets.SSH_PRIVATE_KEY }}
+        command: |
+          cd /var/www/html/codeploy
+          sudo cp .env-example .env
+          sudo composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist -y
+          sudo php artisan key:generate
+          sudo chmod -R 777 storage bootstrap/cache
+          sudo php artisan config:cache
+      env:
+        DB_CONNECTION: '${{ secrets.BESANA_CONNECTION }}'
+        DB_DATABASE: ${{ secrets.BESANA_DATABASE }}
