@@ -51,6 +51,6 @@ jobs:
         envkey_DB_DATABASE: ${{ secrets.BESANA_DATABASE }}
         envkey_DB_USERNAME: ${{ secrets.BESANA_USERNAME }}
         envkey_DB_PASSWORD: ${{ secrets.BESANA_PASSWORD }}
-        directory: var/www/html/codeploy/
+        directory: var/www/html/codeploy
         file_name: .env
         fail_on_empty: false
