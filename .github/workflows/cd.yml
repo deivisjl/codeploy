@@ -27,6 +27,20 @@ jobs:
         remote_user: ${{ secrets.REMOTE_USER }}
         remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
 
+    - name: Config env file
+      uses: SpicyPizza/create-envfile@v1.3
+      with:
+        envkey_DEBUG: false
+        envkey_DB_CONNECTION: ${{ secrets.BESANA_CONNECTION }}
+        envkey_DB_HOST: ${{ secrets.BESANA_HOST }}
+        envkey_DB_PORT: ${{ secrets.BESANA_PORT }}
+        envkey_DB_DATABASE: ${{ secrets.BESANA_DATABASE }}
+        envkey_DB_USERNAME: ${{ secrets.BESANA_USERNAME }}
+        envkey_DB_PASSWORD: ${{ secrets.BESANA_PASSWORD }}
+        directory: /var/www/html/codeploy/
+        file_name: .env
+        fail_on_empty: false
+
     - name: Sync vendor packages
       uses: JimCronqvist/action-ssh@7737f1192ddd8376686e9d6354dea44592c942bf
       with:
@@ -34,18 +48,8 @@ jobs:
         privateKey: ${{ secrets.SSH_PRIVATE_KEY }}
         command: |
           cd /var/www/html/codeploy
-          sudo cp .env.example .env
-          sudo echo DB_CONNECTION =  ${{ secrets.BESANA_CONNECTION }} > .env
-          sudo echo DB_HOST=${{ secrets.BESANA_HOST }} > .env
-          sudo echo DB_PORT=${{ secrets.BESANA_PORT }} > .env
-          sudo echo DB_DATABASE=${{ secrets.BESANA_DATABASE }} > .env
-          sudo echo DB_USERNAME=${{ secrets.BESANA_USERNAME }} > .env
-          sudo echo DB_PASSWORD=${{ secrets.BESANA_PASSWORD }} > .env
           sudo composer install --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+          sudo chown -R ubuntu:ubuntu  .env vendor
           sudo php artisan key:generate
           sudo chmod -R 777 storage bootstrap/cache
           sudo php artisan config:cache
-          sudo chown -R ubuntu:ubuntu vendor
-      env:
-        DB_CONNECTION: ${{ secrets.BESANA_CONNECTION }}
-        DB_DATABASE: ${{ secrets.BESANA_DATABASE }}
