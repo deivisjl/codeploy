@@ -35,7 +35,7 @@ jobs:
         command: |
           cd /var/www/html/codeploy
           sudo cp .env-example .env
-          sudo composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist -y
+          sudo composer install --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
           sudo php artisan key:generate
           sudo chmod -R 777 storage bootstrap/cache
           sudo php artisan config:cache
