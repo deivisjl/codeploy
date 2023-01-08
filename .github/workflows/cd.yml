@@ -34,23 +34,9 @@ jobs:
         privateKey: ${{ secrets.SSH_PRIVATE_KEY }}
         command: |
           cd /var/www/html/codeploy
-          sudo cp .env.example .env
+          echo "${{ secrets.ENV_FILE }}" > .env
           sudo composer install --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
           sudo chown -R ubuntu:ubuntu .env vendor
           sudo php artisan key:generate
           sudo chmod -R 777 storage bootstrap/cache
           sudo php artisan config:cache
-
-    - name: Config env file
-      uses: SpicyPizza/create-envfile@v1.3
-      with:
-        envkey_DEBUG: false
-        envkey_DB_CONNECTION: ${{ secrets.BESANA_CONNECTION }}
-        envkey_DB_HOST: ${{ secrets.BESANA_HOST }}
-        envkey_DB_PORT: ${{ secrets.BESANA_PORT }}
-        envkey_DB_DATABASE: ${{ secrets.BESANA_DATABASE }}
-        envkey_DB_USERNAME: ${{ secrets.BESANA_USERNAME }}
-        envkey_DB_PASSWORD: ${{ secrets.BESANA_PASSWORD }}
-        directory: var/www/html/codeploy
-        file_name: .env
-        fail_on_empty: false
