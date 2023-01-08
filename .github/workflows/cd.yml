@@ -35,6 +35,12 @@ jobs:
         command: |
           cd /var/www/html/codeploy
           sudo cp .env.example .env
+          sudo echo DB_CONNECTION =  ${{ secrets.BESANA_CONNECTION }} >> .env
+          sudo echo DB_HOST=${{ secrets.BESANA_HOST }} >> .env
+          sudo echo DB_PORT=${{ secrets.BESANA_PORT }} >> .env
+          sudo echo DB_DATABASE=${{ secrets.BESANA_DATABASE }} >> .env
+          sudo echo DB_USERNAME=${{ secrets.BESANA_USERNAME }} >> .env
+          sudo echo DB_PASSWORD=${{ secrets.BESANA_PASSWORD }} >> .env
           sudo composer install --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
           sudo php artisan key:generate
           sudo chmod -R 777 storage bootstrap/cache
