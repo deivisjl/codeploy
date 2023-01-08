@@ -27,6 +27,20 @@ jobs:
         remote_user: ${{ secrets.REMOTE_USER }}
         remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
 
+    - name: Sync vendor packages
+      uses: JimCronqvist/action-ssh@7737f1192ddd8376686e9d6354dea44592c942bf
+      with:
+        hosts: '${{ secrets.REMOTE_USER }}@${{ secrets.HOSTNAME }}'
+        privateKey: ${{ secrets.SSH_PRIVATE_KEY }}
+        command: |
+          cd /var/www/html/codeploy
+          sudo cp .env.example .env
+          sudo composer install --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+          sudo chown -R ubuntu:ubuntu .env vendor
+          sudo php artisan key:generate
+          sudo chmod -R 777 storage bootstrap/cache
+          sudo php artisan config:cache
+
     - name: Config env file
       uses: SpicyPizza/create-envfile@v1.3
       with:
@@ -40,16 +54,3 @@ jobs:
         directory: var/www/html/codeploy/
         file_name: .env
         fail_on_empty: false
-
-    - name: Sync vendor packages
-      uses: JimCronqvist/action-ssh@7737f1192ddd8376686e9d6354dea44592c942bf
-      with:
-        hosts: '${{ secrets.REMOTE_USER }}@${{ secrets.HOSTNAME }}'
-        privateKey: ${{ secrets.SSH_PRIVATE_KEY }}
-        command: |
-          cd /var/www/html/codeploy
-          sudo composer install --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
-          sudo chown -R ubuntu:ubuntu  .env vendor
-          sudo php artisan key:generate
-          sudo chmod -R 777 storage bootstrap/cache
-          sudo php artisan config:cache
